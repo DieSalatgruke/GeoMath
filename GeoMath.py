@@ -6,26 +6,82 @@ gon_faktor = float(10 / 9)
 rundungs_faktor = 8
 
 
+# Input durch das Terminal. Leitet es weiter an create_koord(), um es in die Klasse Koordinaten zu übergeben.
+def create_east():
+    print('*' * 25)
+    input_east = input('East: ')
+    input_east = input_east.replace(',', '.')
+    if len(input_east) == 0:
+        return 0
+    else:
+        try:
+            input_east = float(input_east)
+            return input_east
+        except ValueError:
+            print('Versuch es nochmal!')
+
+
+def create_north():
+    input_north = input('North: ')
+    input_north = input_north.replace(',', '.')
+    if len(input_north) == 0:
+        return 0
+    else:
+        try:
+            input_north = float(input_north)
+            return input_north
+        except ValueError:
+            print('Versuch es nochmal!')
+
+
+def create_radius():
+    input_radius = input('Radius: ')
+    input_radius = input_radius.replace(',', '.')
+    if len(input_radius) == 0:
+        return 0
+    else:
+        try:
+            input_radius = float(input_radius)
+            return input_radius
+        except ValueError:
+            print('Versuch es nochmal!')
+
+
+def create_richtungswinkel():
+    input_richtungswinkel = input('Richtungswinkel: ')
+    input_richtungswinkel = input_richtungswinkel.replace(',', '.')
+    if len(input_richtungswinkel) == 0:
+        return 0
+    else:
+        try:
+            input_richtungswinkel = float(input_richtungswinkel)
+            return input_richtungswinkel
+        except ValueError:
+            print('Versuch es nochmal!')
+
+
+# Erzeugt ein Dokument (eins pro Tag; sonst Nachtragung mit genauer Uhrzeit),
+# dass die berechneten Werte abspeichert und dokumentiert.
 def file_handler(*args):
     try:
-        with open(datetime.datetime.today().strftime('GeoMath_' + '%Y%m%d.txt'), mode='x') as file:
-            file.write('-' * 50 + '\n')
+        with open(datetime.datetime.today().strftime('Protokoll_GeoMath_' + '%Y%m%d.txt'), mode='x') as file:
+            file.write('-' * 45 + '\n')
             file.write('Protokoll ' + datetime.datetime.today().strftime('%A, den %d %B %Y') + '\n')
             file.write('Eintrag vorgenommen: ' + datetime.datetime.today().strftime('%X') + '\n')
-            file.write('-' * 50 + '\n')
+            file.write('-' * 45 + '\n')
             file.write('\n')
             for arg in args:
-                file.writelines(arg + '\n' + '*' * 50 + '\n')
+                file.writelines(arg + '\n' + '*' * 30 + '\n')
 
     except FileExistsError:
-        with open(datetime.datetime.today().strftime('GeoMath_' + '%Y%m%d.txt'), mode='a+') as file:
-            file.write('-' * 50 + '\n')
+        with open(datetime.datetime.today().strftime('Protokoll_GeoMath_' + '%Y%m%d.txt'), mode='a+') as file:
+            file.write('\n' + '-' * 45 + '\n')
             file.write('Neuer Eintrag in das Protokoll.' + '\n')
-            file.write('Letzter Eintrag: ' + datetime.datetime.today().strftime('%X') + '\n')
-            file.write('-' * 50 + '\n')
+            file.write('Uhrzeit Eintragung: ' + datetime.datetime.today().strftime('%X') + '\n')
+            file.write('-' * 45 + '\n')
             file.write('\n')
             for arg in args:
-                file.writelines(arg + '\n' + '*' * 50 + '\n')
+                file.writelines(arg + '\n' + '*' * 30 + '\n')
 
 
 # PolFunktion aus dem Taschenrechner.
@@ -71,7 +127,8 @@ def rec_function(strecke, richtungswinkel):
 
 
 # Rechnet den North-/Hochwert des Schnittpunketes aus.
-def interception_point_north(koord_east_1, koord_north_1, koord_east_3, koord_north_3, riwi_t1_2, riwi_t3_4, pos_a_deci_point=2):
+def interception_point_north(koord_east_1, koord_north_1, koord_east_3, koord_north_3,
+                             riwi_t1_2, riwi_t3_4, pos_a_deci_point=2):
     zaehler = (koord_east_3 - koord_east_1) - (koord_north_3 - koord_north_1) * m.tan(m.radians(riwi_t1_2 / gon_faktor))
     nenner = m.tan(m.radians(riwi_t1_2 / gon_faktor)) - m.tan(m.radians(riwi_t3_4 / gon_faktor))
     inter_point_north = koord_north_3 + (zaehler / nenner)
@@ -86,7 +143,7 @@ def interception_point_east(koord_east, koord_north, riwi, inter_point_north, po
     return inter_point_east
 
 
-# Erzeugt den Eintrag für die Klasse Koordinaten.
+# Erzeugt den Eintrag in die Klasse Koordinaten, direkt aus dem script.
 def create_koord(east, north, radius=0, richtungswinkel=0):
     return Koordinaten(float(east), float(north), float(radius), float(richtungswinkel))
 
@@ -114,10 +171,7 @@ class Geradenschnitt:
         self.schnittpkt_north = schnittpkt_north
 
     def show(self):
-        return f' Strecke: {self.strecke}' + ' \n ' \
-               f'Richtungswinkel: {self.richtungswinkel}' + ' \n ' \
+        return f' Strecke: {self.strecke} m' + ' \n ' \
+               f'Richtungswinkel: {self.richtungswinkel} gon' + ' \n ' \
                f'Schnittpunkt East: {self.schnittpkt_east}' + ' \n ' \
                f'Schnittpunkt North: {self.schnittpkt_north}'
-
-
-
